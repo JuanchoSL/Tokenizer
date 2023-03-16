@@ -19,7 +19,7 @@ class JwtAuthenticatorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->tokenizer = new JwtToken;
+        $this->tokenizer = new JwtToken('API_TOKEN');
         $this->credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
     }
 

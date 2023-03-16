@@ -15,9 +15,9 @@ class JwtToken implements TokenInterface
 
     private string $audience;
 
-    public function __construct()
+    public function __construct(string $audience)
     {
-        $this->audience = $_SERVER['HTTP_HOST'] ?? $_SERVER['HOSTNAME'] ?? $_SERVER['COMPUTERNAME'];
+        $this->audience = $audience;
     }
 
     public function encode(CredentialInterface $credential): string
