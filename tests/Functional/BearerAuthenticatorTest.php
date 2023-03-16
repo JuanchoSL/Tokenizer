@@ -19,7 +19,7 @@ class BearerAuthenticatorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->tokenizer = new BearerToken(getenv('API_TOKEN'));
+        $this->tokenizer = new BearerToken('API_TOKEN');
         $this->credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
     }
 

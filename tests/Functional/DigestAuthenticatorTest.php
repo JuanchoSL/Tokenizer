@@ -19,7 +19,7 @@ class DigestAuthenticatorTest extends TestCase
 
     public function setUp(): void
     {
-        $this->tokenizer = new DigestToken(getenv('API_TOKEN'));
+        $this->tokenizer = new DigestToken('API_TOKEN');
         $this->credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
     }
 
