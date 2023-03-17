@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "juanchosl/exceptions",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JuanchoSL/Exceptions.git",
-                "reference": "6d14fec7fbbfcb5c0e1bf72f75c2a98555df4b54"
+                "reference": "dd2e80a0284d445ffd882064d68ea06047ab9c12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JuanchoSL/Exceptions/zipball/6d14fec7fbbfcb5c0e1bf72f75c2a98555df4b54",
-                "reference": "6d14fec7fbbfcb5c0e1bf72f75c2a98555df4b54",
+                "url": "https://api.github.com/repos/JuanchoSL/Exceptions/zipball/dd2e80a0284d445ffd882064d68ea06047ab9c12",
+                "reference": "dd2e80a0284d445ffd882064d68ea06047ab9c12",
                 "shasum": ""
             },
             "require": {
@@ -45,10 +45,10 @@
                 "exceptions"
             ],
             "support": {
-                "source": "https://github.com/JuanchoSL/Exceptions/tree/1.0.0",
+                "source": "https://github.com/JuanchoSL/Exceptions/tree/1.0.1",
                 "issues": "https://github.com/JuanchoSL/Exceptions/issues"
             },
-            "time": "2023-03-16T16:34:01+00:00"
+            "time": "2023-03-16T23:31:46+00:00"
         }
     ],
     "packages-dev": [
