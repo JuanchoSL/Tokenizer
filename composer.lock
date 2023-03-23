@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a00bdc443389fb29928e6efbb8fe623",
+    "content-hash": "cf02e76b7e1789c78d116a8034b8d539",
     "packages": [
         {
             "name": "juanchosl/exceptions",
-            "version": "1.0.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JuanchoSL/Exceptions.git",
-                "reference": "6d14fec7fbbfcb5c0e1bf72f75c2a98555df4b54"
+                "reference": "e232487a9b20544d1885c0013f5c6391e7f7e525"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JuanchoSL/Exceptions/zipball/6d14fec7fbbfcb5c0e1bf72f75c2a98555df4b54",
-                "reference": "6d14fec7fbbfcb5c0e1bf72f75c2a98555df4b54",
+                "url": "https://api.github.com/repos/JuanchoSL/Exceptions/zipball/e232487a9b20544d1885c0013f5c6391e7f7e525",
+                "reference": "e232487a9b20544d1885c0013f5c6391e7f7e525",
                 "shasum": ""
             },
             "require": {
@@ -45,10 +45,10 @@
                 "exceptions"
             ],
             "support": {
-                "source": "https://github.com/JuanchoSL/Exceptions/tree/1.0.0",
+                "source": "https://github.com/JuanchoSL/Exceptions/tree/1.0.2",
                 "issues": "https://github.com/JuanchoSL/Exceptions/issues"
             },
-            "time": "2023-03-16T16:34:01+00:00"
+            "time": "2023-03-23T22:08:28+00:00"
         }
     ],
     "packages-dev": [
@@ -1789,7 +1789,11 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.1 || ^8.0"
+        "php": "^7.1 || ^8.0",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-hash": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

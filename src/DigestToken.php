@@ -23,7 +23,7 @@ class DigestToken implements TokenInterface
     {
         $uniqid = uniqid();
         $counter = "00000001";
-        $file = $_SERVER['REQUEST_URI'] ?? __FILE__;
+        $file = $_SERVER['REQUEST_URI'] ?? $this->realm;
         $response = $this->createResponse($credential, $uniqid, $counter, $file);
         return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $file . "',qop='auth',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
@@ -74,7 +74,7 @@ class DigestToken implements TokenInterface
     private function createResponse(CredentialInterface $credential, string $uniqid, string $counter, string $uri): string
     {
         $A1 = md5($credential->getUsername() . ':' . $this->realm . ':' . $credential->getPassword());
-        $A2 = md5('GET:' . 'uri');
+        $A2 = md5('GET:' . $uri);
         return md5($A1 . ':' . md5($this->realm) . ':' . $counter . ':' . $uniqid . ':auth:' . $A2);
     }
 

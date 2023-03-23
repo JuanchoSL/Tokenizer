@@ -3,23 +3,23 @@
 namespace JuanchoSL\Tokenizer\Services;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
+use JuanchoSL\Tokenizer\Contracts\CredentialsInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
-use JuanchoSL\Tokenizer\Entities\Credentials;
 use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Exceptions\UnauthorizedException;
 
 class Authentication
 {
 
-    private Credentials $users;
+    private CredentialsInterface $users;
     private TokenInterface $tokenizer;
 
     /**
      * Athentication service in order to authenticate a credential or token using the interfaces provided
      * @param TokenInterface $tokenizer Token authenticator to use
-     * @param Credentials $credentials Sequence of credential for check into
+     * @param CredentialsInterface $credentials Sequence of credential for check into
      */
-    public function __construct(TokenInterface $tokenizer, Credentials $credentials)
+    public function __construct(TokenInterface $tokenizer, CredentialsInterface $credentials)
     {
         $this->tokenizer = $tokenizer;
         $this->users = $credentials;
