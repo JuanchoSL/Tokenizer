@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Context\Infrastructure\Adapters\Token;
+namespace JuanchoSL\Tokenizer;
 
-use App\Context\Domain\Contracts\TokenInterface;
-use App\Context\Domain\Contracts\CredentialInterface;
-use App\Context\Domain\Entities\Credential;
+use JuanchoSL\Tokenizer\Contracts\TokenInterface;
+use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
+use JuanchoSL\Tokenizer\Entities\Credential;
 
 class KeyToken implements TokenInterface
 {
 
     public function check(CredentialInterface $credential, string $token): bool
     {
-        return $token == getenv('API_TOKEN');
+        return $token == $credential->getUsername();
     }
 
     public function decode(string $token): ?CredentialInterface
     {
-        return new Credential($token, '');
+        return new Credential($token, $token);
     }
 
     public function encode(CredentialInterface $credential): string
     {
-        return getenv('API_TOKEN');
+        return $credential->getUsername();
     }
 
 }
