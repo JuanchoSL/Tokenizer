@@ -3,8 +3,9 @@
 namespace JuanchoSL\Tokenizer\Entities;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
+use JuanchoSL\Tokenizer\Contracts\CredentialsInterface;
 
-class Credentials
+class Credentials implements CredentialsInterface
 {
 
     /**

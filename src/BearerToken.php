@@ -15,6 +15,8 @@ class BearerToken implements TokenInterface
 
     private string $cypher_key;
 
+    private string $algorithm = 'aes-256-cbc';
+
     public function __construct(string $cypher_key)
     {
         $this->cypher_key = $cypher_key;
@@ -22,7 +24,7 @@ class BearerToken implements TokenInterface
 
     public function encode(CredentialInterface $credential): string
     {
-        $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+        $ivLength = openssl_cipher_iv_length($this->algorithm);
         $iv = openssl_random_pseudo_bytes($ivLength);
 
         return self::TYPE . ' ' . base64_encode($ivLength . strrev($iv) . openssl_encrypt(json_encode([
@@ -30,7 +32,7 @@ class BearerToken implements TokenInterface
                             'password' => $credential->getPassword(),
                             'creationtime' => time(),
                             'expire' => time() + 3600
-                                ]), 'aes-256-cbc', md5($this->cypher_key), OPENSSL_RAW_DATA, $iv));
+                                ]), $this->algorithm, md5($this->cypher_key), OPENSSL_RAW_DATA, $iv));
     }
 
     public function decode(string $token): ?CredentialInterface
@@ -39,11 +41,11 @@ class BearerToken implements TokenInterface
             $token = trim(str_replace(self::TYPE, '', $token));
         }
         $sEncrypted = base64_decode($token);
-        $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+        $ivLength = openssl_cipher_iv_length($this->algorithm);
         $offset = strlen((string) $ivLength);
         $iv = strrev(substr($sEncrypted, $offset, $ivLength));
         $offset += strlen($iv);
-        $decrypted = openssl_decrypt(substr($sEncrypted, $offset), 'aes-256-cbc', md5($this->cypher_key), OPENSSL_RAW_DATA, $iv);
+        $decrypted = openssl_decrypt(substr($sEncrypted, $offset), $this->algorithm, md5($this->cypher_key), OPENSSL_RAW_DATA, $iv);
 
         if (empty($decrypted)) {
             throw new PreconditionFailedException("The provided token is invalid");
