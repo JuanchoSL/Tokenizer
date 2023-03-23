@@ -27,6 +27,10 @@
     ],
     "require": {
         "php": "^7.1 || ^8.0",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-hash": "*",
         "juanchosl/exceptions": "^1.0"
     },
     "require-dev": {
