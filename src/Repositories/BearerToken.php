@@ -1,6 +1,6 @@
 <?php
 
-namespace JuanchoSL\Tokenizer;
+namespace JuanchoSL\Tokenizer\Repositories;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;

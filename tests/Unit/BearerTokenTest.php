@@ -4,7 +4,7 @@ namespace JuanchoSL\Tokenizer\Tests\Unit;
 
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
-use JuanchoSL\Tokenizer\BearerToken;
+use JuanchoSL\Tokenizer\Repositories\BearerToken;
 use PHPUnit\Framework\TestCase;
 
 class BearerTokenTest extends TestCase

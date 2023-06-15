@@ -4,7 +4,7 @@ namespace JuanchoSL\Tokenizer\Tests\Unit;
 
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
-use JuanchoSL\Tokenizer\JwtToken;
+use JuanchoSL\Tokenizer\Repositories\JwtToken;
 use PHPUnit\Framework\TestCase;
 
 class JwtTokenTest extends TestCase
