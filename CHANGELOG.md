@@ -1,11 +1,16 @@
 # Change Log Tokenizer
 
 
-## [1.0.2] - 2023-03-
+## [1.0.2] - 2023-06-15
 
 ### Added
 
+- Github actions
+
 ### Changed
+
+- Folder structure
+- Namepaces
 
 ### Fixed
 
