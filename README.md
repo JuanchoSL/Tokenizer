@@ -11,3 +11,14 @@ composer require juanchosl/tokenizer
 ```
 
 ## How use it
+
+### For create a token
+```
+$tokenizer = new JuanchoSL\Tokenizer\Repositories\JwtToken($_ENV['CYPHER_KEY']);
+$token = $tokenizer->encode(new Credential($username, $password));
+```
+
+### For decode a token
+```
+$user_data = $tokenizer->decode($token);
+```
