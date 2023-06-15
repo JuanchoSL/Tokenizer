@@ -4,7 +4,7 @@ namespace JuanchoSL\Tokenizer\Tests\Unit;
 
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
-use JuanchoSL\Tokenizer\BasicToken;
+use JuanchoSL\Tokenizer\Repositories\BasicToken;
 use PHPUnit\Framework\TestCase;
 
 class BasicTokenTest extends TestCase

@@ -7,7 +7,7 @@ use JuanchoSL\Exceptions\UnauthorizedException;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
-use JuanchoSL\Tokenizer\BearerToken;
+use JuanchoSL\Tokenizer\Repositories\BearerToken;
 use JuanchoSL\Tokenizer\Services\Authentication;
 use PHPUnit\Framework\TestCase;
 

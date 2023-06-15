@@ -4,7 +4,7 @@ namespace JuanchoSL\Tokenizer\Tests\Unit;
 
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
-use JuanchoSL\Tokenizer\DigestToken;
+use JuanchoSL\Tokenizer\Repositories\DigestToken;
 use PHPUnit\Framework\TestCase;
 
 class DigestTokenTest extends TestCase
