@@ -1,10 +1,10 @@
-name: PHP Composer
+name: PHP Composer and Tests
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "develop" ]
 
 permissions:
   contents: read
