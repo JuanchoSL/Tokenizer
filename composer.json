@@ -19,12 +19,6 @@
             "homepage": "https://github.com/JuanchoSL/"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "http://github.com/juanchosl/exceptions"
-        }
-    ],
     "require": {
         "php": "^7.1 || ^8.0",
         "ext-json": "*",
