@@ -2,6 +2,7 @@
 
 namespace JuanchoSL\Tokenizer\Tests\Unit;
 
+use JuanchoSL\Exceptions\PreconditionFailedException;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
 use JuanchoSL\Tokenizer\Repositories\JwtToken;
@@ -61,5 +62,15 @@ class JwtTokenTest extends TestCase
         $this->assertInstanceOf(Credential::class, $credential);
         $this->assertFalse($this->credentials->hasCredential($credential->getUsername()));
     }
-
+    public function testFailingRequireds()
+    {
+        $this->expectException(PreconditionFailedException::class);
+        new JwtToken([
+            JwtToken::OPTION_ISSUER => $this->options[JwtToken::OPTION_ISSUER],
+        ]);
+        $this->expectException(PreconditionFailedException::class);
+        new JwtToken([
+            JwtToken::OPTION_AUDIENCE => $this->options[JwtToken::OPTION_AUDIENCE],
+        ]);
+    }
 }

@@ -27,12 +27,11 @@ class DigestToken implements TokenInterface
                 throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
             }
         }
-        foreach ([self::OPTION_QOP => 'qop'] as $required_option => $requierd_field) {
-            if (array_key_exists($required_option, $options)) {
-                $this->{$requierd_field} = $options[$required_option];
+        foreach ([self::OPTION_QOP => 'qop'] as $optional_option => $optional_field) {
+            if (array_key_exists($optional_option, $options)) {
+                $this->{$optional_field} = $options[$optional_option];
             }
         }
-        //$this->realm = $realm;
     }
 
     public function encode(CredentialInterface $credential): string

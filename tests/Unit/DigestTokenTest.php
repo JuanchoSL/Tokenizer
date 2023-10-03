@@ -2,6 +2,7 @@
 
 namespace JuanchoSL\Tokenizer\Tests\Unit;
 
+use JuanchoSL\Exceptions\PreconditionFailedException;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
 use JuanchoSL\Tokenizer\Repositories\DigestToken;
@@ -58,5 +59,15 @@ class DigestTokenTest extends TestCase
         $user = $tokenizer->decode(trim(\str_replace('Digest', '', $token)));
         $this->assertFalse($this->credentials->hasCredential($user->getUsername()));
     }
-
+    public function testFailingRequireds()
+    {
+        $this->expectException(PreconditionFailedException::class);
+        new DigestToken([
+            DigestToken::OPTION_REALM => $this->options[DigestToken::OPTION_REALM],
+        ]);
+        $this->expectException(PreconditionFailedException::class);
+        new DigestToken([
+            DigestToken::OPTION_URI => $this->options[DigestToken::OPTION_URI],
+        ]);
+    }
 }

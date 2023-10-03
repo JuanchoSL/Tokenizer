@@ -30,12 +30,11 @@ class BearerToken implements TokenInterface
                 throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
             }
         }
-        foreach ([self::OPTION_ALGORITHM => 'algorithm', self::OPTION_TTL => 'ttl'] as $required_option => $requierd_field) {
-            if (array_key_exists($required_option, $options)) {
-                $this->{$requierd_field} = $options[$required_option];
+        foreach ([self::OPTION_ALGORITHM => 'algorithm', self::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
+            if (array_key_exists($optional_option, $options)) {
+                $this->{$optional_field} = $options[$optional_option];
             }
         }
-        //$this->cypher = $cypher;
     }
 
     public function encode(CredentialInterface $credential): string
