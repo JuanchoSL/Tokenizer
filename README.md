@@ -14,7 +14,11 @@ composer require juanchosl/tokenizer
 
 ### For create a token
 ```
-$tokenizer = new JuanchoSL\Tokenizer\Repositories\JwtToken($_ENV['CYPHER_KEY']);
+$options = [
+    JwtToken::OPTION_ISSUER => $_ENV['CYPHER_KEY'],
+    JwtToken::OPTION_AUDIENCE => 'Restricted area'
+];
+$tokenizer = new JuanchoSL\Tokenizer\Repositories\JwtToken($options);
 $token = $tokenizer->encode(new Credential($username, $password));
 ```
 

@@ -12,25 +12,43 @@ class JwtToken implements TokenInterface
 {
 
     const TYPE = 'JWT';
-
+    //const OPTION_ALGORITHM = 'alg';
+    const OPTION_TTL = 'ttl';
+    const OPTION_ISSUER = 'iss';
+    const OPTION_AUDIENCE = 'aud';
     private string $audience;
+    private int $ttl = 3600;
+    private string $issuer;
+    private string $algorithm = 'HS256';
 
-    public function __construct(string $audience)
+    public function __construct(array $options)
     {
-        $this->audience = $audience;
+        foreach ([self::OPTION_ISSUER => 'issuer', self::OPTION_AUDIENCE => 'audience'] as $required_option => $requierd_field) {
+            if (array_key_exists($required_option, $options)) {
+                $this->{$requierd_field} = $options[$required_option];
+            } else {
+                throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
+            }
+        }
+        foreach ([self::OPTION_TTL => 'ttl'] as $required_option => $requierd_field) {
+            if (array_key_exists($required_option, $options)) {
+                $this->{$requierd_field} = $options[$required_option];
+            }
+        }
+        //$this->audience = $audience;
     }
 
     public function encode(CredentialInterface $credential): string
     {
         $header = [
-            'alg' => 'HS256',
+            'alg' => $this->algorithm,
             'typ' => self::TYPE
         ];
         $payload = [
             'sub' => $credential->getUsername(),
             'iat' => time(),
-            'exp' => time() + 3600,
-            'iss' => $this->audience,
+            'exp' => time() + $this->ttl,
+            'iss' => $this->issuer,
             'aud' => $this->audience
         ];
         $signature = $this->generateSignature($header, $payload, $credential->getPassword());
@@ -58,7 +76,7 @@ class JwtToken implements TokenInterface
         }
 
         $base64UrlSignature = $this->generateSignature($header, $payload, $credential->getPassword());
-        return ($base64UrlSignature === $signatureProvided && $payload['iss'] === $this->audience);
+        return ($base64UrlSignature === $signatureProvided && $payload['iss'] === $this->issuer);
     }
 
     /**

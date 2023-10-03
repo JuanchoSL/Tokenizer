@@ -11,15 +11,20 @@ class JwtTokenTest extends TestCase
 {
 
     private Credentials $credentials;
+    private array $options;
 
     public function setUp(): void
     {
         $this->credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
+        $this->options = [
+            JwtToken::OPTION_ISSUER => 'Restricted area',
+            JwtToken::OPTION_AUDIENCE => 'Restricted area'
+        ];
     }
 
     public function testJwtToken(): void
     {
-        $tokenizer = new JwtToken('Restricted area');
+        $tokenizer = new JwtToken($this->options);
         $token = $tokenizer->encode(new Credential('username', 'password'));
         $this->assertIsString($token);
         $this->assertStringContainsString('JWT', $token);
@@ -33,7 +38,7 @@ class JwtTokenTest extends TestCase
 
     public function testJwtTokenPassFail(): void
     {
-        $tokenizer = new JwtToken('Restricted area');
+        $tokenizer = new JwtToken($this->options);
         $token = $tokenizer->encode(new Credential('username', 'pass'));
         $this->assertIsString($token);
         $this->assertStringContainsString('JWT', $token);
@@ -47,7 +52,7 @@ class JwtTokenTest extends TestCase
 
     public function testJwtTokenUserNotExists(): void
     {
-        $tokenizer = new JwtToken('Restricted area');
+        $tokenizer = new JwtToken($this->options);
         $token = $tokenizer->encode(new Credential('nameuser', 'pass'));
         $this->assertIsString($token);
         $this->assertStringContainsString('JWT', $token);

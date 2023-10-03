@@ -11,15 +11,17 @@ class DigestTokenTest extends TestCase
 {
 
     private Credentials $credentials;
+    private array $options;
 
     public function setUp(): void
     {
         $this->credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
+        $this->options = [DigestToken::OPTION_REALM => 'API_TOKEN', DigestToken::OPTION_URI => 'API_TOKEN'];
     }
 
     public function testDigestToken(): void
     {
-        $tokenizer = new DigestToken("Restricted area");
+        $tokenizer = new DigestToken($this->options);
         $token = $tokenizer->encode(new Credential('username', 'password'));
         $this->assertIsString($token);
         $this->assertStringContainsString('Digest', $token);
@@ -28,13 +30,13 @@ class DigestTokenTest extends TestCase
         $this->assertTrue($this->credentials->hasCredential($user->getUsername()));
         $credential = $this->credentials->getCredential($user->getUsername());
         $this->assertTrue($tokenizer->check($credential, $token));
-//        $response = $tokenizer->createResponse($credential, $parts['cnonce'], $parts['nc'], $parts['uri']);
+        //        $response = $tokenizer->createResponse($credential, $parts['cnonce'], $parts['nc'], $parts['uri']);
 //        $this->assertEquals($parts['response'], $response);
     }
 
     public function testDigestTokenPassFail(): void
     {
-        $tokenizer = new DigestToken("Restricted area");
+        $tokenizer = new DigestToken($this->options);
         $token = $tokenizer->encode(new Credential('username', 'pass'));
         $this->assertIsString($token);
         $this->assertStringContainsString('Digest', $token);
@@ -43,13 +45,13 @@ class DigestTokenTest extends TestCase
         $this->assertTrue($this->credentials->hasCredential($user->getUsername()));
         $credential = $this->credentials->getCredential($user->getUsername());
         $this->assertFalse($tokenizer->check($credential, $token));
-//        $response = $tokenizer->createResponse($credential, $parts['cnonce'], $parts['nc'], $parts['uri']);
+        //        $response = $tokenizer->createResponse($credential, $parts['cnonce'], $parts['nc'], $parts['uri']);
 //        $this->assertNotEquals($parts['response'], $response);
     }
 
     public function testDigestTokenUserNotExists(): void
     {
-        $tokenizer = new DigestToken("Restricted area");
+        $tokenizer = new DigestToken($this->options);
         $token = $tokenizer->encode(new Credential('nameuser', 'pass'));
         $this->assertIsString($token);
         $this->assertStringContainsString('Digest', $token);

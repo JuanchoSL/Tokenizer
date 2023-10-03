@@ -1,6 +1,19 @@
 # Change Log Tokenizer
 
 
+## [1.0.3] - 2023-10-03
+
+### Added
+
+- Constants for every Tokenizer in order to pass the array of parameters than can and needs to be setted
+
+### Changed
+
+- Constructors now use an array of options
+
+### Fixed
+
+
 ## [1.0.2] - 2023-06-15
 
 ### Added

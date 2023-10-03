@@ -11,15 +11,19 @@ class BearerTokenTest extends TestCase
 {
 
     private Credentials $credentials;
+    private array $options;
 
     public function setUp(): void
     {
         $this->credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
+        $this->options = [
+            BearerToken::OPTION_CYPHER => 'Restricted area'
+        ];
     }
 
     public function testBearerToken(): void
     {
-        $tokenizer = new BearerToken("Restricted area");
+        $tokenizer = new BearerToken($this->options);
         $token = $tokenizer->encode(new Credential('username', 'password'));
         $this->assertIsString($token);
         $this->assertStringContainsString('Bearer', $token);
@@ -33,7 +37,7 @@ class BearerTokenTest extends TestCase
 
     public function testBearerTokenPassFail(): void
     {
-        $tokenizer = new BearerToken("Restricted area");
+        $tokenizer = new BearerToken($this->options);
         $token = $tokenizer->encode(new Credential('username', 'pass'));
         $this->assertIsString($token);
         $token = trim(\str_replace('Bearer', '', $token));
@@ -46,7 +50,7 @@ class BearerTokenTest extends TestCase
 
     public function testBearerTokenUserNotExists(): void
     {
-        $tokenizer = new BearerToken("Restricted area");
+        $tokenizer = new BearerToken($this->options);
         $token = $tokenizer->encode(new Credential('nameuser', 'pass'));
         $this->assertIsString($token);
         $token = trim(\str_replace('Bearer', '', $token));
