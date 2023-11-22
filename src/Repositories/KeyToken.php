@@ -14,7 +14,7 @@ class KeyToken implements TokenInterface
         return $token == $credential->getUsername();
     }
 
-    public function decode(string $token): ?CredentialInterface
+    public function decode(string $token): CredentialInterface
     {
         return new Credential($token, $token);
     }

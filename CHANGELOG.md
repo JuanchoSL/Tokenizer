@@ -1,11 +1,13 @@
 # Change Log Tokenizer
 
 
-## [1.0.3] - 2023-10-03
+## [1.0.3] - 2023-11-22
 
 ### Added
 
 - Constants for every Tokenizer in order to pass the array of parameters than can and needs to be setted
+- PHPStan in DEV for quality code
+- More documentation
 
 ### Changed
 

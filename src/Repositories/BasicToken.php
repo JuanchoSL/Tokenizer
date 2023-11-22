@@ -20,13 +20,10 @@ class BasicToken implements TokenInterface
     public function check(CredentialInterface $credential, string $token): bool
     {
         $user = $this->decode($token);
-        if (empty($user)) {
-            return false;
-        }
         return $credential->getUsername() == $user->getUsername() && $credential->getPassword() == $user->getPassword();
     }
 
-    public function decode(string $token): ?CredentialInterface
+    public function decode(string $token): CredentialInterface
     {
         if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
             $token = trim(str_replace(self::TYPE, '', $token));

@@ -18,6 +18,10 @@ class DigestToken implements TokenInterface
     private string $qop = 'auth';
     private string $realm;
 
+    /**
+     *
+     * @param array<string,string> $options
+     */
     public function __construct(array $options)
     {
         foreach ([self::OPTION_REALM => 'realm', self::OPTION_URI => 'uri'] as $required_option => $requierd_field) {
@@ -42,7 +46,7 @@ class DigestToken implements TokenInterface
         return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
 
-    public function decode(string $token): ?CredentialInterface
+    public function decode(string $token): CredentialInterface
     {
         $parts = $this->parse($token);
         if (empty($parts) || !is_array($parts) || !array_key_exists('username', $parts)) {

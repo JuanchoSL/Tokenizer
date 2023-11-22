@@ -21,6 +21,10 @@ class BearerToken implements TokenInterface
     private string $algorithm = 'aes-256-cbc';
     private int $ttl = 3600;
 
+    /**
+     *
+     * @param array<string,string|int> $options
+     */
     public function __construct(array $options)
     {
         foreach ([self::OPTION_CYPHER => 'cypher'] as $required_option => $requierd_field) {
@@ -50,7 +54,7 @@ class BearerToken implements TokenInterface
         ]), $this->algorithm, md5($this->cypher), OPENSSL_RAW_DATA, $iv));
     }
 
-    public function decode(string $token): ?CredentialInterface
+    public function decode(string $token): CredentialInterface
     {
         if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
             $token = trim(str_replace(self::TYPE, '', $token));
@@ -82,9 +86,6 @@ class BearerToken implements TokenInterface
     public function check(CredentialInterface $credential, string $token): bool
     {
         $user = $this->decode($token);
-        if (empty($user)) {
-            return false;
-        }
         return $credential->getUsername() == $user->getUsername() && $credential->getPassword() == $user->getPassword();
     }
 

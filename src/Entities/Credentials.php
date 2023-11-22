@@ -2,6 +2,7 @@
 
 namespace JuanchoSL\Tokenizer\Entities;
 
+use JuanchoSL\Exceptions\NotFoundException;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\CredentialsInterface;
 
@@ -38,11 +39,14 @@ class Credentials implements CredentialsInterface
     /**
      * Retrieve the Credential from credentials where the username is equeal to sended
      * @param string $username Ther username to find
-     * @return CredentialInterface|null The Credential entity if exists or null
+     * @return CredentialInterface The Credential entity if exists
      */
-    public function getCredential(string $username): ?CredentialInterface
+    public function getCredential(string $username): CredentialInterface
     {
-        return $this->credentials[$username] ?? null;
+        if (!$this->hasCredential($username)) {
+            throw new NotFoundException("The username {$username} is not into collection");
+        }
+        return $this->credentials[$username];
     }
 
 }
