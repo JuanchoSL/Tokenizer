@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Tokenizer\Services;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;

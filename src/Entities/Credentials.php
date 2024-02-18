@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Tokenizer\Entities;
 
 use JuanchoSL\Exceptions\NotFoundException;
