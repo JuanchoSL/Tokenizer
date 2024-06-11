@@ -2,7 +2,6 @@
 
 namespace JuanchoSL\Tokenizer\Tests\Functional;
 
-use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Exceptions\UnauthorizedException;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
@@ -56,7 +55,7 @@ class JwtAuthenticatorTest extends TestCase
         $this->assertIsString($token);
         $this->assertStringContainsString($this->tokenizer::TYPE, $token);
         $token = trim(\str_replace($this->tokenizer::TYPE, '', $token));
-        $this->expectException(ForbiddenException::class);
+        $this->expectException(UnauthorizedException::class);
         $credential = $service->authenticateByToken($token);
     }
 
