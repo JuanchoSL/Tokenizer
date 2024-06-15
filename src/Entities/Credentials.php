@@ -28,21 +28,11 @@ class Credentials implements CredentialsInterface
         }
     }
 
-    /**
-     * Check if an username exists into the Credentials sequence
-     * @param string $username The username to check
-     * @return bool true if username exists into any credential
-     */
     public function hasCredential(string $username): bool
     {
         return array_key_exists($username, $this->credentials);
     }
 
-    /**
-     * Retrieve the Credential from credentials where the username is equeal to sended
-     * @param string $username Ther username to find
-     * @return CredentialInterface The Credential entity if exists
-     */
     public function getCredential(string $username): CredentialInterface
     {
         if (!$this->hasCredential($username)) {
