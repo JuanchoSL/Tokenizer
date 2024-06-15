@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Tokenizer\Services;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\CredentialsInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
-use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Exceptions\UnauthorizedException;
 
 class Authentication
@@ -39,14 +40,13 @@ class Authentication
      * Check using the token if credential exists into Credential sequence using the tokenizer
      * @param string $token The user token to check
      * @return CredentialInterface
-     * @throws ForbiddenException
      * @throws UnauthorizedException
      */
     public function authenticateByToken(string $token): CredentialInterface
     {
         $user = $this->tokenizer->decode($token);
         if (!$this->users->hasCredential($user->getUsername())) {
-            throw new ForbiddenException("The user '{$user->getUsername()}' not exists");
+            throw new UnauthorizedException("The user '{$user->getUsername()}' not exists");
         }
         $credential = $this->users->getCredential($user->getUsername());
         if (!$this->tokenizer->check($credential, $token)) {
@@ -59,13 +59,12 @@ class Authentication
      * Check if provided credential exists into Credential sequence
      * @param CredentialInterface $credential The Credential to check
      * @return CredentialInterface
-     * @throws ForbiddenException
      * @throws UnauthorizedException
      */
     public function authenticateByCredential(CredentialInterface $credential): CredentialInterface
     {
         if (!$this->users->hasCredential($credential->getUsername())) {
-            throw new ForbiddenException("The user '{$credential->getUsername()}' not exists");
+            throw new UnauthorizedException("The user '{$credential->getUsername()}' not exists");
         } else {
             $user = $this->users->getCredential($credential->getUsername());
             if ($user->getPassword() !== $credential->getPassword()) {

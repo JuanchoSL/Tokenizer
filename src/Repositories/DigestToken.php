@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Tokenizer\Repositories;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
@@ -11,24 +13,42 @@ class DigestToken implements TokenInterface
 {
 
     const TYPE = 'Digest';
-
+    const OPTION_REALM = 'realm';
+    const OPTION_QOP = 'qop';
+    const OPTION_URI = 'uri';
+    private string $uri;
+    private string $qop = 'auth';
     private string $realm;
 
-    public function __construct(string $realm)
+    /**
+     *
+     * @param array<string,string> $options
+     */
+    public function __construct(array $options)
     {
-        $this->realm = $realm;
+        foreach ([self::OPTION_REALM => 'realm', self::OPTION_URI => 'uri'] as $required_option => $requierd_field) {
+            if (array_key_exists($required_option, $options)) {
+                $this->{$requierd_field} = $options[$required_option];
+            } else {
+                throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
+            }
+        }
+        foreach ([self::OPTION_QOP => 'qop'] as $optional_option => $optional_field) {
+            if (array_key_exists($optional_option, $options)) {
+                $this->{$optional_field} = $options[$optional_option];
+            }
+        }
     }
 
     public function encode(CredentialInterface $credential): string
     {
         $uniqid = uniqid();
         $counter = "00000001";
-        $file = $_SERVER['REQUEST_URI'] ?? $this->realm;
-        $response = $this->createResponse($credential, $uniqid, $counter, $file);
-        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $file . "',qop='auth',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
+        $response = $this->createResponse($credential, $uniqid, $counter, $this->uri);
+        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
 
-    public function decode(string $token): ?CredentialInterface
+    public function decode(string $token): CredentialInterface
     {
         $parts = $this->parse($token);
         if (empty($parts) || !is_array($parts) || !array_key_exists('username', $parts)) {
@@ -45,7 +65,7 @@ class DigestToken implements TokenInterface
     private function parse(string $token): ?array
     {
         if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
-            $jwy = trim(str_replace(self::TYPE, '', $token));
+            $token = trim(str_replace(self::TYPE, '', $token));
         }
         // protect against missing data
         $needed_parts = array('nonce' => 1, 'nc' => 1, 'cnonce' => 1, 'qop' => 1, 'username' => 1, 'uri' => 1, 'response' => 1);

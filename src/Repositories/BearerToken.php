@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Tokenizer\Repositories;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
@@ -13,13 +15,32 @@ class BearerToken implements TokenInterface
 
     const TYPE = 'Bearer';
 
-    private string $cypher_key;
+    const OPTION_ALGORITHM = 'algorithm';
+    const OPTION_CYPHER = 'cypher';
+    const OPTION_TTL = 'ttl';
+    private string $cypher;
 
     private string $algorithm = 'aes-256-cbc';
+    private int $ttl = 3600;
 
-    public function __construct(string $cypher_key)
+    /**
+     *
+     * @param array<string,string|int> $options
+     */
+    public function __construct(array $options)
     {
-        $this->cypher_key = $cypher_key;
+        foreach ([self::OPTION_CYPHER => 'cypher'] as $required_option => $requierd_field) {
+            if (array_key_exists($required_option, $options)) {
+                $this->{$requierd_field} = $options[$required_option];
+            } else {
+                throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
+            }
+        }
+        foreach ([self::OPTION_ALGORITHM => 'algorithm', self::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
+            if (array_key_exists($optional_option, $options)) {
+                $this->{$optional_field} = $options[$optional_option];
+            }
+        }
     }
 
     public function encode(CredentialInterface $credential): string
@@ -28,14 +49,14 @@ class BearerToken implements TokenInterface
         $iv = openssl_random_pseudo_bytes($ivLength);
 
         return self::TYPE . ' ' . base64_encode($ivLength . strrev($iv) . openssl_encrypt(json_encode([
-                            'username' => $credential->getUsername(),
-                            'password' => $credential->getPassword(),
-                            'creationtime' => time(),
-                            'expire' => time() + 3600
-                                ]), $this->algorithm, md5($this->cypher_key), OPENSSL_RAW_DATA, $iv));
+            'username' => $credential->getUsername(),
+            'password' => $credential->getPassword(),
+            'creationtime' => time(),
+            'expire' => time() + $this->ttl
+        ]), $this->algorithm, md5($this->cypher), OPENSSL_RAW_DATA, $iv));
     }
 
-    public function decode(string $token): ?CredentialInterface
+    public function decode(string $token): CredentialInterface
     {
         if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
             $token = trim(str_replace(self::TYPE, '', $token));
@@ -45,7 +66,7 @@ class BearerToken implements TokenInterface
         $offset = strlen((string) $ivLength);
         $iv = strrev(substr($sEncrypted, $offset, $ivLength));
         $offset += strlen($iv);
-        $decrypted = openssl_decrypt(substr($sEncrypted, $offset), $this->algorithm, md5($this->cypher_key), OPENSSL_RAW_DATA, $iv);
+        $decrypted = openssl_decrypt(substr($sEncrypted, $offset), $this->algorithm, md5($this->cypher), OPENSSL_RAW_DATA, $iv);
 
         if (empty($decrypted)) {
             throw new PreconditionFailedException("The provided token is invalid");
@@ -67,9 +88,6 @@ class BearerToken implements TokenInterface
     public function check(CredentialInterface $credential, string $token): bool
     {
         $user = $this->decode($token);
-        if (empty($user)) {
-            return false;
-        }
         return $credential->getUsername() == $user->getUsername() && $credential->getPassword() == $user->getPassword();
     }
 

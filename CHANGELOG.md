@@ -1,6 +1,21 @@
 # Change Log Tokenizer
 
 
+## [1.0.3] - 2023-11-22
+
+### Added
+
+- Constants for every Tokenizer in order to pass the array of parameters than can and needs to be setted
+- PHPStan in DEV for quality code
+- More documentation
+
+### Changed
+
+- Constructors now use an array of options
+
+### Fixed
+
+
 ## [1.0.2] - 2023-06-15
 
 ### Added
