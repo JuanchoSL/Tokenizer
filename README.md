@@ -20,7 +20,7 @@ The system use a __CredentialInterface__ as DTO, a simple object with username a
 All credentials needs to be pushed into a __CredentialsInterface__ collection, a sequence of available usersto compare.
 We provide a simple Collection in order to push a few users, but is importante that you create your own implementation in order to search usrs into database, as usual
 
-In a login request, you needs to ensure the username+password validation brefore create a token
+In a login request, you needs to ensure the username+password validation before create a token
 
 ### Use a concret Tokenizer
 

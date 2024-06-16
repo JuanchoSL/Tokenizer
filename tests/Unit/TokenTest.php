@@ -47,7 +47,7 @@ class TokenTest extends TestCase
     /**
      * @dataProvider providerLoginData
      */
-    public function testBasicToken($tokenizer, $credentials): void
+    public function testOkToken($tokenizer, $credentials): void
     {
         $token = $tokenizer->encode(new Credential('username', 'password'));
         $this->assertIsString($token);
@@ -63,7 +63,7 @@ class TokenTest extends TestCase
     /**
      * @dataProvider providerLoginData
      */
-    public function testBasicTokenPassFail($tokenizer, $credentials): void
+    public function testTokenPassFail($tokenizer, $credentials): void
     {
         $token = $tokenizer->encode(new Credential('username', 'pass'));
         $this->assertIsString($token);
@@ -79,7 +79,7 @@ class TokenTest extends TestCase
     /**
      * @dataProvider providerLoginData
      */
-    public function testBasicTokenUserNotExists($tokenizer, $credentials): void
+    public function testTokenUserNotExists($tokenizer, $credentials): void
     {
         $token = $tokenizer->encode(new Credential('nameuser', 'pass'));
         $this->assertIsString($token);
