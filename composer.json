@@ -28,7 +28,8 @@
         "juanchosl/exceptions": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "9.5.25"
+        "phpstan/phpstan": "1.10.*",
+        "phpunit/phpunit": "9.6.*"
     },
     "autoload": {
         "psr-4": {
@@ -41,6 +42,7 @@
         }
     },
     "scripts": {
-        "tests": "vendor/bin/phpunit --configuration phpunit.xml tests"
+        "tests": "vendor/bin/phpunit --configuration phpunit.xml tests",
+        "phpstan": "vendor/bin/phpstan analyse -c phpstan.neon --xdebug"
     }
 }

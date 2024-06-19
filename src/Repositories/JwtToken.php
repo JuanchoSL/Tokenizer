@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Tokenizer\Repositories;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
@@ -12,25 +14,46 @@ class JwtToken implements TokenInterface
 {
 
     const TYPE = 'JWT';
-
+    //const OPTION_ALGORITHM = 'alg';
+    const OPTION_TTL = 'ttl';
+    const OPTION_ISSUER = 'iss';
+    const OPTION_AUDIENCE = 'aud';
     private string $audience;
+    private int $ttl = 3600;
+    private string $issuer;
+    private string $algorithm = 'HS256';
 
-    public function __construct(string $audience)
+    /**
+     *
+     * @param array<string,string|int> $options
+     */
+    public function __construct(array $options)
     {
-        $this->audience = $audience;
+        foreach ([self::OPTION_ISSUER => 'issuer', self::OPTION_AUDIENCE => 'audience'] as $required_option => $requierd_field) {
+            if (array_key_exists($required_option, $options)) {
+                $this->{$requierd_field} = $options[$required_option];
+            } else {
+                throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
+            }
+        }
+        foreach ([self::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
+            if (array_key_exists($optional_option, $options)) {
+                $this->{$optional_field} = $options[$optional_option];
+            }
+        }
     }
 
     public function encode(CredentialInterface $credential): string
     {
         $header = [
-            'alg' => 'HS256',
+            'alg' => $this->algorithm,
             'typ' => self::TYPE
         ];
         $payload = [
             'sub' => $credential->getUsername(),
             'iat' => time(),
-            'exp' => time() + 3600,
-            'iss' => $this->audience,
+            'exp' => time() + $this->ttl,
+            'iss' => $this->issuer,
             'aud' => $this->audience
         ];
         $signature = $this->generateSignature($header, $payload, $credential->getPassword());
@@ -39,10 +62,13 @@ class JwtToken implements TokenInterface
         return self::TYPE . ' ' . implode('.', [$header, $payload, $signature]);
     }
 
-    public function decode(string $jwt): ?CredentialInterface
+    public function decode(string $jwt): CredentialInterface
     {
         $parts = $this->parse($jwt);
-        return (isset($parts['payload']['sub'])) ? new Credential($parts['payload']['sub'], $jwt) : null;
+        if (!isset($parts['payload']['sub'])) {
+            throw new PreconditionFailedException("The provided token is invalid");
+        }
+        return new Credential($parts['payload']['sub'], $jwt);
     }
 
     public function check(CredentialInterface $credential, string $token): bool
@@ -58,13 +84,13 @@ class JwtToken implements TokenInterface
         }
 
         $base64UrlSignature = $this->generateSignature($header, $payload, $credential->getPassword());
-        return ($base64UrlSignature === $signatureProvided && $payload['iss'] === $this->audience);
+        return ($base64UrlSignature === $signatureProvided && $payload['iss'] === $this->issuer);
     }
 
     /**
      *
      * @param string $jwt
-     * @return array<string, array<string,string>|string>
+     * @return array<string, mixed>
      * @throws PreconditionFailedException
      */
     private function parse(string $jwt): array
@@ -103,14 +129,23 @@ class JwtToken implements TokenInterface
     /**
      *
      * @param array<string,string> $headers
-     * @param array<string,string> $payload
+     * @param array<string,string|int> $payload
      * @param string $cypher_key
      * @return string
+     * @throws PreconditionFailedException
      */
     private function generateSignature(array $headers, array $payload, string $cypher_key): string
     {
-        $base64UrlHeader = $this->base64UrlEncode(json_encode($headers));
-        $base64UrlPayload = $this->base64UrlEncode(json_encode($payload));
+        $decoded_headers = json_encode($headers);
+        if (!$decoded_headers) {
+            throw new PreconditionFailedException(json_last_error_msg());
+        }
+        $base64UrlHeader = $this->base64UrlEncode($decoded_headers);
+        $decoded_payload = json_encode($payload);
+        if (!$decoded_payload) {
+            throw new PreconditionFailedException(json_last_error_msg());
+        }
+        $base64UrlPayload = $this->base64UrlEncode($decoded_payload);
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $cypher_key, true);
         return $this->base64UrlEncode($signature);
     }
