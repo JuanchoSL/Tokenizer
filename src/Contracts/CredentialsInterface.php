@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace JuanchoSL\Tokenizer\Contracts;
 
@@ -16,10 +14,18 @@ interface CredentialsInterface
      * @return bool true if username exists into any credential
      */
     public function hasCredential(string $username): bool;
+    
     /**
      * Retrieve the Credential from credentials where the username is equeal to sended
      * @param string $username Ther username to find
      * @return CredentialInterface The Credential entity if exists
      */
     public function getCredential(string $username): CredentialInterface;
+
+    /**
+     * Summary of verifyCredential
+     * @param CredentialInterface $credential
+     * @return void
+     */
+    public function verifyCredential(CredentialInterface $credential): bool;
 }

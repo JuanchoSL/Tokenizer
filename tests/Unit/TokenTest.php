@@ -36,7 +36,8 @@ class TokenTest extends TestCase
                     JwtToken::OPTION_AUDIENCE => 'Restricted area'
                 ]),
                 $credentials
-            ],/*
+            ],
+            /*
       'API key' => [
           new KeyToken,
           $credentials

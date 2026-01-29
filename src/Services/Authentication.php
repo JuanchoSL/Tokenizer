@@ -63,6 +63,11 @@ class Authentication
      */
     public function authenticateByCredential(CredentialInterface $credential): CredentialInterface
     {
+        if (!$this->users->verifyCredential($credential)) {
+            throw new UnauthorizedException("The user '{$credential->getUsername()}' does not exists or the password is invalid");
+        }
+        return $this->users->getCredential($credential->getUsername());
+        
         if (!$this->users->hasCredential($credential->getUsername())) {
             throw new UnauthorizedException("The user '{$credential->getUsername()}' not exists");
         } else {

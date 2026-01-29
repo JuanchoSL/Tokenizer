@@ -17,7 +17,7 @@ class AutenticationTest extends TestCase
 
     public function providerLoginData(): array
     {
-        $credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
+        $credentials = new Credentials(new Credential('username', password_hash('password', PASSWORD_BCRYPT)), new Credential('user', password_hash('pass', PASSWORD_BCRYPT)));
         return [
             'basic token' => [
                 new BasicToken,
@@ -49,13 +49,15 @@ class AutenticationTest extends TestCase
      */
     public function testOk($tokenizer, $credentials): void
     {
-        echo $tokenizer::TYPE.PHP_EOL;
+        //echo $tokenizer::TYPE.PHP_EOL;
         $service = new Authentication($tokenizer, $credentials);
-        $token = $service->generateToken(new Credential('username', 'password'));
+        $token = $service->generateToken($credentials->getCredential('username'));
         $this->assertIsString($token);
         $this->assertStringContainsString($tokenizer::TYPE, $token);
         $token = trim(\str_replace($tokenizer::TYPE, '', $token));
         $credential = $service->authenticateByToken($token);
+        $this->assertInstanceOf(Credential::class, $credential);
+        $credential = $service->authenticateByCredential(new Credential('username', 'password'));
         $this->assertInstanceOf(Credential::class, $credential);
     }
 
@@ -65,7 +67,7 @@ class AutenticationTest extends TestCase
     public function testInvalidPass($tokenizer, $credentials): void
     {
         $service = new Authentication($tokenizer, $credentials);
-        $token = $service->generateToken(new Credential('username', 'pass'));
+        $token = $service->generateToken(new Credential('username', password_hash('pass', PASSWORD_BCRYPT)));
         $this->assertIsString($token);
         $this->assertStringContainsString($tokenizer::TYPE, $token);
         $token = trim(\str_replace($tokenizer::TYPE, '', $token));
@@ -79,7 +81,7 @@ class AutenticationTest extends TestCase
     public function testInvalidUser($tokenizer, $credentials): void
     {
         $service = new Authentication($tokenizer, $credentials);
-        $token = $service->generateToken(new Credential('usermane', 'pass'));
+        $token = $service->generateToken(new Credential('usermane', password_hash('pass', PASSWORD_BCRYPT)));
         $this->assertIsString($token);
         $this->assertStringContainsString($tokenizer::TYPE, $token);
         $token = trim(\str_replace($tokenizer::TYPE, '', $token));

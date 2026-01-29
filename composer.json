@@ -4,7 +4,6 @@
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/JuanchoSL/Tokenizer",
-    "minimum-stability": "stable",
     "keywords": [
         "token",
         "basic token",
@@ -15,17 +14,18 @@
     "authors": [
         {
             "name": "Juan Sánchez Lecegui",
-            "email": "JuanchoSL@hotmail.com",
-            "homepage": "https://github.com/JuanchoSL/"
+            "email": "Juan.Sanchez@tecnicosweb.com",
+            "homepage": "https://www.linkedin.com/in/juansanchezlecegui/",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.1 || ^8.0",
+        "php": "^8.1",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-hash": "*",
-        "juanchosl/exceptions": "^1.0"
+        "juanchosl/exceptions": "1.0.*"
     },
     "require-dev": {
         "phpstan/phpstan": "1.10.*",
