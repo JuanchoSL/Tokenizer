@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace JuanchoSL\Tokenizer\Repositories;
 
+use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
@@ -45,6 +44,7 @@ class DigestToken implements TokenInterface
         $uniqid = uniqid();
         $counter = "00000001";
         $response = $this->createResponse($credential, $uniqid, $counter, $this->uri);
+        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
         return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
 
@@ -93,9 +93,19 @@ class DigestToken implements TokenInterface
 
     private function createResponse(CredentialInterface $credential, string $uniqid, string $counter, string $uri): string
     {
-        $A1 = md5($credential->getUsername() . ':' . $this->realm . ':' . $credential->getPassword());
-        $A2 = md5('GET:' . $uri);
-        return md5($A1 . ':' . md5($this->realm) . ':' . $counter . ':' . $uniqid . ':auth:' . $A2);
+        $A2 = (new StringsManipulators($_SERVER['REQUEST_METHOD'] ?? 'GET'))->concatenation($uri, ':')->md5();
+        return (new StringsManipulators($credential->getUsername()))
+            ->concatenation($this->realm, ':')
+            ->concatenation($credential->getPassword(), ':')
+            ->md5()
+            ->concatenation(md5($this->realm), ':')
+            ->concatenation($counter, ':')
+            ->concatenation($uniqid, ':')
+            ->concatenation('auth', ':')
+            ->concatenation((string) $A2, ':')
+            ->md5()
+            ->__tostring()
+        ;
     }
 
 }

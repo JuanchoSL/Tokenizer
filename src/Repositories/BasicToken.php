@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace JuanchoSL\Tokenizer\Repositories;
 
+use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
@@ -16,7 +15,10 @@ class BasicToken implements TokenInterface
 
     public function encode(CredentialInterface $credential): string
     {
-        return self::TYPE . ' ' . base64_encode(implode(':', [$credential->getUsername(), $credential->getPassword()]));
+        return (string) (new StringsManipulators($credential->getUsername()))
+            ->concatenation($credential->getPassword(), ':')
+            ->base64Encode()
+            ->preppend(static::TYPE, ' ');
     }
 
     public function check(CredentialInterface $credential, string $token): bool

@@ -25,6 +25,7 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "ext-hash": "*",
+        "juanchosl/datamanipulation": "1.0.*",
         "juanchosl/exceptions": "1.0.*"
     },
     "require-dev": {
