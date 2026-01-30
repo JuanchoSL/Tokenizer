@@ -43,9 +43,8 @@ class DigestToken implements TokenInterface
     {
         $uniqid = uniqid();
         $counter = "00000001";
-        $response = $this->createResponse($credential, $uniqid, $counter, $this->uri);
-        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
-        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
+        $response = $this->createResponse($credential, $uniqid, $counter, md5($this->realm));
+        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",nonce='" . $uniqid . "',cnonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
 
     public function decode(string $token): CredentialInterface
@@ -87,20 +86,20 @@ class DigestToken implements TokenInterface
         if (empty($parts)) {
             return false;
         }
-        $response = $this->createResponse($credential, $parts['cnonce'], $parts['nc'], $parts['uri']);
+        $response = $this->createResponse($credential, $parts['nonce'], $parts['nc'], $parts['cnonce']);
         return $parts['response'] === $response;
     }
 
-    private function createResponse(CredentialInterface $credential, string $uniqid, string $counter, string $uri): string
+    private function createResponse(CredentialInterface $credential, string $uniqid, string $counter, string $cnonce): string
     {
-        $A2 = (new StringsManipulators($_SERVER['REQUEST_METHOD'] ?? 'GET'))->concatenation($uri, ':')->md5();
+        $A2 = (new StringsManipulators($_SERVER['REQUEST_METHOD'] ?? 'GET'))->concatenation($_SERVER['REQUEST_URI'] ?? '/', ':')->md5();
         return (new StringsManipulators($credential->getUsername()))
             ->concatenation($this->realm, ':')
             ->concatenation($credential->getPassword(), ':')
             ->md5()
-            ->concatenation(md5($this->realm), ':')
-            ->concatenation($counter, ':')
             ->concatenation($uniqid, ':')
+            ->concatenation($counter, ':')
+            ->concatenation($cnonce, ':')
             ->concatenation('auth', ':')
             ->concatenation((string) $A2, ':')
             ->md5()
