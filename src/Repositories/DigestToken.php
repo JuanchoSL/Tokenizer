@@ -25,14 +25,14 @@ class DigestToken implements TokenInterface
      */
     public function __construct(array $options)
     {
-        foreach ([self::OPTION_REALM => 'realm', self::OPTION_URI => 'uri'] as $required_option => $requierd_field) {
+        foreach ([static::OPTION_REALM => 'realm', static::OPTION_URI => 'uri'] as $required_option => $requierd_field) {
             if (array_key_exists($required_option, $options)) {
                 $this->{$requierd_field} = $options[$required_option];
             } else {
                 throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
             }
         }
-        foreach ([self::OPTION_QOP => 'qop'] as $optional_option => $optional_field) {
+        foreach ([static::OPTION_QOP => 'qop'] as $optional_option => $optional_field) {
             if (array_key_exists($optional_option, $options)) {
                 $this->{$optional_field} = $options[$optional_option];
             }
@@ -44,7 +44,7 @@ class DigestToken implements TokenInterface
         $uniqid = uniqid();
         $counter = "00000001";
         $response = $this->createResponse($credential, $uniqid, $counter, md5($this->realm));
-        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",nonce='" . $uniqid . "',cnonce='" . md5($this->realm) . "',response='" . $response . "'";
+        return static::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",nonce='" . $uniqid . "',cnonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
 
     public function decode(string $token): CredentialInterface
@@ -63,8 +63,8 @@ class DigestToken implements TokenInterface
      */
     private function parse(string $token): ?array
     {
-        if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
-            $token = trim(str_replace(self::TYPE, '', $token));
+        if (substr($token, 0, strlen(static::TYPE)) == static::TYPE) {
+            $token = trim(str_replace(static::TYPE, '', $token));
         }
         // protect against missing data
         $needed_parts = array('nonce' => 1, 'nc' => 1, 'cnonce' => 1, 'qop' => 1, 'username' => 1, 'uri' => 1, 'response' => 1);

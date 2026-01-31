@@ -27,14 +27,14 @@ class BearerToken implements TokenInterface
      */
     public function __construct(array $options)
     {
-        foreach ([self::OPTION_CYPHER => 'cypher'] as $required_option => $requierd_field) {
+        foreach ([static::OPTION_CYPHER => 'cypher'] as $required_option => $requierd_field) {
             if (array_key_exists($required_option, $options)) {
                 $this->{$requierd_field} = $options[$required_option];
             } else {
                 throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
             }
         }
-        foreach ([self::OPTION_ALGORITHM => 'algorithm', self::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
+        foreach ([static::OPTION_ALGORITHM => 'algorithm', static::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
             if (array_key_exists($optional_option, $options)) {
                 $this->{$optional_field} = $options[$optional_option];
             }
@@ -46,7 +46,7 @@ class BearerToken implements TokenInterface
         $ivLength = openssl_cipher_iv_length($this->algorithm);
         $iv = openssl_random_pseudo_bytes($ivLength);
 
-        return self::TYPE . ' ' . base64_encode($ivLength . strrev($iv) . openssl_encrypt(json_encode([
+        return static::TYPE . ' ' . base64_encode($ivLength . strrev($iv) . openssl_encrypt(json_encode([
             'username' => $credential->getUsername(),
             'password' => $credential->getPassword(),
             'creationtime' => time(),
@@ -56,8 +56,8 @@ class BearerToken implements TokenInterface
 
     public function decode(string $token): CredentialInterface
     {
-        if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
-            $token = trim(str_replace(self::TYPE, '', $token));
+        if (substr($token, 0, strlen(static::TYPE)) == static::TYPE) {
+            $token = trim(str_replace(static::TYPE, '', $token));
         }
         $sEncrypted = base64_decode($token);
         $ivLength = openssl_cipher_iv_length($this->algorithm);

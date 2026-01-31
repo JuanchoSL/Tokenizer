@@ -25,8 +25,6 @@ class Credentials implements CredentialsInterface
     {
         foreach ($credentials as $credential) {
             $this->credentials[$credential->getUsername()] = $credential;
-            //$this->credentials[$credential->getUsername()] = new Credential($credential->getUsername(),$credential->getPassword());
-            //$this->credentials[$credential->getUsername()] = new Credential($credential->getUsername(),password_hash($credential->getPassword(), PASSWORD_BCRYPT));
         }
     }
 
@@ -41,13 +39,5 @@ class Credentials implements CredentialsInterface
             throw new NotFoundException("The username {$username} is not into collection");
         }
         return $this->credentials[$username];
-    }
-    public function verifyCredential(CredentialInterface $credential): bool
-    {
-        try {
-            return password_verify($credential->getPassword(), $this->getCredential($credential->getUsername())->getPassword());
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 }
