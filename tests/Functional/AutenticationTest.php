@@ -50,10 +50,10 @@ class AutenticationTest extends TestCase
                 ]),
                 $credentials
             ],/*
-      'API key' => [
-          new KeyToken,
-          $credentials
-      ],*/
+'API key' => [
+    new KeyToken,
+    $credentials
+],*/
         ];
     }
     /**
@@ -61,7 +61,6 @@ class AutenticationTest extends TestCase
      */
     public function testOk($tokenizer, $credentials): void
     {
-        //echo $tokenizer::TYPE.PHP_EOL;
         $service = new Authentication($tokenizer, $credentials);
         $token = $service->generateToken(new Credential('username', 'password'));
         $this->assertIsString($token);
@@ -79,7 +78,7 @@ class AutenticationTest extends TestCase
     public function testInvalidPass($tokenizer, $credentials): void
     {
         $service = new Authentication($tokenizer, $credentials);
-        $token = $service->generateToken(new Credential('username', password_hash('pass', PASSWORD_BCRYPT)));
+        $token = $service->generateToken(new Credential('username', 'pass'));
         $this->assertIsString($token);
         $this->assertStringContainsString($tokenizer::TYPE, $token);
         $token = trim(\str_replace($tokenizer::TYPE, '', $token));
@@ -93,7 +92,7 @@ class AutenticationTest extends TestCase
     public function testInvalidUser($tokenizer, $credentials): void
     {
         $service = new Authentication($tokenizer, $credentials);
-        $token = $service->generateToken(new Credential('usermane', password_hash('pass', PASSWORD_BCRYPT)));
+        $token = $service->generateToken(new Credential('usermane', 'pass'));
         $this->assertIsString($token);
         $this->assertStringContainsString($tokenizer::TYPE, $token);
         $token = trim(\str_replace($tokenizer::TYPE, '', $token));

@@ -28,14 +28,7 @@ class JwtToken implements TokenInterface
      */
     public function __construct(array $options)
     {
-        foreach ([static::OPTION_ISSUER => 'issuer', static::OPTION_AUDIENCE => 'audience'] as $required_option => $requierd_field) {
-            if (array_key_exists($required_option, $options)) {
-                $this->{$requierd_field} = $options[$required_option];
-            } else {
-                throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
-            }
-        }
-        foreach ([static::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
+        foreach ([static::OPTION_ISSUER => 'issuer', static::OPTION_AUDIENCE => 'audience', static::OPTION_TTL => 'ttl'] as $optional_option => $optional_field) {
             if (array_key_exists($optional_option, $options)) {
                 $this->{$optional_field} = $options[$optional_option];
             }
@@ -46,15 +39,20 @@ class JwtToken implements TokenInterface
     {
         $header = [
             'alg' => $this->algorithm,
-            'typ' => static::TYPE
+            'typ' => static::TYPE,
+            'cty' => 'JWS'
         ];
         $payload = [
             'sub' => $credential->getUsername(),
             'iat' => time(),
-            'exp' => time() + $this->ttl,
-            'iss' => $this->issuer,
-            'aud' => $this->audience
+            'exp' => time() + $this->ttl
         ];
+        if (!empty($this->audience)) {
+            $payload['aud'] = $this->audience;
+        }
+        if (!empty($this->issuer)) {
+            $payload['iss'] = $this->issuer;
+        }
         $signature = $this->generateSignature($header, $payload, $credential->getPassword());
         $header = (new StringsManipulators(json_encode($header)))->base64Encode()->trim('=')->__tostring();
         $payload = (new StringsManipulators(json_encode($payload)))->base64Encode()->trim('=')->__tostring();
@@ -78,12 +76,14 @@ class JwtToken implements TokenInterface
         $payload['sub'] = $credential->getUsername();
         $signatureProvided = $parts['signature'];
 
-        if (!array_key_exists('exp', $payload) || (int) $payload['exp'] - time() < 0) {
+        if (!array_key_exists('exp', $payload) || (int) $payload['exp'] <= time()) {
             throw new UnauthorizedException("The token has been expired");
         }
 
         $base64UrlSignature = $this->generateSignature($header, $payload, $credential->getPassword());
-        return ($base64UrlSignature === $signatureProvided && $payload['iss'] === $this->issuer && $payload['aud'] === $this->audience);
+        return ($base64UrlSignature === $signatureProvided &&
+            (empty($this->issuer) || (array_key_exists('iss', $payload) && $payload['iss'] === $this->issuer)) &&
+            (empty($this->audience) || (array_key_exists('aud', $payload) && $payload['aud'] === $this->audience)));
     }
 
     /**
