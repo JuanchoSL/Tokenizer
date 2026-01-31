@@ -5,10 +5,11 @@ namespace JuanchoSL\Tokenizer\Repositories;
 use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
+use JuanchoSL\Tokenizer\Contracts\TokenParseableInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
-class BasicToken implements TokenInterface
+class BasicToken implements TokenInterface, TokenParseableInterface
 {
 
     const TYPE = 'Basic';
@@ -45,7 +46,8 @@ class BasicToken implements TokenInterface
         return $result;
     }
 
-    public function decode(string $token): CredentialInterface
+
+    public function parse(string $token): array
     {
         if (substr($token, 0, strlen(static::TYPE)) == static::TYPE) {
             $token = trim(str_replace(static::TYPE, '', $token));
@@ -55,7 +57,12 @@ class BasicToken implements TokenInterface
             throw new PreconditionFailedException('Invalid token');
         }
 
-        list($username, $password) = explode(':', $decoded);
+        return explode(':', $decoded);
+    }
+
+    public function decode(string $token): CredentialInterface
+    {
+        list($username, $password) = $this->parse($token);
         if (empty($username) || empty($password)) {
             throw new PreconditionFailedException('Invalid token');
         }

@@ -4,11 +4,12 @@ namespace JuanchoSL\Tokenizer\Repositories;
 
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
+use JuanchoSL\Tokenizer\Contracts\TokenParseableInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
-class BearerToken implements TokenInterface
+class BearerToken implements TokenInterface, TokenParseableInterface
 {
 
     const TYPE = 'Bearer';
@@ -56,6 +57,25 @@ class BearerToken implements TokenInterface
 
     public function decode(string $token): CredentialInterface
     {
+        $json = $this->parse($token);
+        extract($json);
+        if (empty($username) || empty($password)) {
+            throw new PreconditionFailedException("The provided token is invalid");
+        }
+        if (empty($expire) || $expire <= time()) {
+            throw new ForbiddenException("The token has been expired");
+        }
+        return new Credential($username, $password);
+    }
+
+    public function check(CredentialInterface $credential, string $token): bool
+    {
+        $user = $this->decode($token);
+        return $credential->getUsername() == $user->getUsername() && $credential->getPassword() == $user->getPassword();
+    }
+
+    public function parse($token): array
+    {
         if (substr($token, 0, strlen(static::TYPE)) == static::TYPE) {
             $token = trim(str_replace(static::TYPE, '', $token));
         }
@@ -73,20 +93,6 @@ class BearerToken implements TokenInterface
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new PreconditionFailedException(json_last_error_msg());
         }
-        extract($json);
-        if (empty($username) || empty($password)) {
-            throw new PreconditionFailedException("The provided token is invalid");
-        }
-        if (empty($expire) || $expire <= time()) {
-            throw new ForbiddenException("The token has been expired");
-        }
-        return new Credential($username, $password);
+        return $json;
     }
-
-    public function check(CredentialInterface $credential, string $token): bool
-    {
-        $user = $this->decode($token);
-        return $credential->getUsername() == $user->getUsername() && $credential->getPassword() == $user->getPassword();
-    }
-
 }

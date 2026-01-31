@@ -6,10 +6,11 @@ use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
 use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
+use JuanchoSL\Tokenizer\Contracts\TokenParseableInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
-class JwtToken implements TokenInterface
+class JwtToken implements TokenInterface, TokenParseableInterface
 {
 
     const TYPE = 'JWT';
@@ -92,7 +93,7 @@ class JwtToken implements TokenInterface
      * @return array<string, mixed>
      * @throws PreconditionFailedException
      */
-    private function parse(string $jwt): array
+    public function parse(string $jwt): array
     {
         if (substr($jwt, 0, strlen(static::TYPE)) == static::TYPE) {
             $jwt = trim(str_replace(static::TYPE, '', $jwt));

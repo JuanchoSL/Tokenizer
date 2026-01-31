@@ -5,10 +5,11 @@ namespace JuanchoSL\Tokenizer\Repositories;
 use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
+use JuanchoSL\Tokenizer\Contracts\TokenParseableInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
-class DigestToken implements TokenInterface
+class DigestToken implements TokenInterface,TokenParseableInterface
 {
 
     const TYPE = 'Digest';
@@ -61,7 +62,7 @@ class DigestToken implements TokenInterface
      * @param string $token
      * @return array<string,string>|null
      */
-    private function parse(string $token): ?array
+    public function parse(string $token): array
     {
         if (substr($token, 0, strlen(static::TYPE)) == static::TYPE) {
             $token = trim(str_replace(static::TYPE, '', $token));
@@ -77,7 +78,7 @@ class DigestToken implements TokenInterface
             $data[$m[1]] = $m[3] ? $m[3] : $m[4];
             unset($needed_parts[$m[1]]);
         }
-        return $needed_parts ? null : $data;
+        return $needed_parts ? [] : $data;
     }
 
     public function check(CredentialInterface $credential, string $token): bool
