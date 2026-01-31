@@ -2,12 +2,10 @@
 
 namespace JuanchoSL\Tokenizer\Tests\Unit;
 
-use JuanchoSL\Exceptions\UnauthorizedException;
+use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Tokenizer\Entities\Credentials;
-use JuanchoSL\Tokenizer\Repositories\BasicToken;
 use JuanchoSL\Tokenizer\Repositories\BearerToken;
-use JuanchoSL\Tokenizer\Repositories\DigestToken;
 use JuanchoSL\Tokenizer\Repositories\JwtToken;
 use PHPUnit\Framework\TestCase;
 
@@ -19,6 +17,13 @@ class TimeoutedTokenTest extends TestCase
     {
         $credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
         return [
+            'bearer token' => [
+                new BearerToken([
+                    BearerToken::OPTION_CYPHER => 'Restricted area',
+                    BearerToken::OPTION_TTL => 1
+                ]),
+                $credentials
+            ],
             'jwt token' => [
                 new JwtToken([
                     JwtToken::OPTION_TTL => 1,
@@ -49,7 +54,7 @@ class TimeoutedTokenTest extends TestCase
         $this->assertTrue($credentials->hasCredential($credential->getUsername()));
         $credential = $credentials->getCredential($credential->getUsername());
         sleep(1);
-        $this->expectException(UnauthorizedException::class);
+        $this->expectException(ForbiddenException::class);
         $tokenizer->check($credential, $token);
     }
 }

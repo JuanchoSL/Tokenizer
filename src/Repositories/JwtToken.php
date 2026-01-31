@@ -3,10 +3,10 @@
 namespace JuanchoSL\Tokenizer\Repositories;
 
 use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
+use JuanchoSL\Exceptions\ForbiddenException;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
-use JuanchoSL\Exceptions\UnauthorizedException;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
 class JwtToken implements TokenInterface
@@ -77,7 +77,7 @@ class JwtToken implements TokenInterface
         $signatureProvided = $parts['signature'];
 
         if (!array_key_exists('exp', $payload) || (int) $payload['exp'] <= time()) {
-            throw new UnauthorizedException("The token has been expired");
+            throw new ForbiddenException("The token has been expired");
         }
 
         $base64UrlSignature = $this->generateSignature($header, $payload, $credential->getPassword());
