@@ -22,6 +22,18 @@ class TokenTest extends TestCase
                 new BasicToken,
                 $credentials
             ],
+            'basic token_bdcrypt' => [
+                new BasicToken([BasicToken::OPTION_HASHED => PASSWORD_BCRYPT]),
+                new Credentials(new Credential('username', password_hash('password', PASSWORD_BCRYPT)), new Credential('user', password_hash('pass', PASSWORD_BCRYPT)))
+            ],
+            'basic token_argon2i' => [
+                new BasicToken([BasicToken::OPTION_HASHED => PASSWORD_ARGON2I]),
+                new Credentials(new Credential('username', password_hash('password', PASSWORD_ARGON2I)), new Credential('user', password_hash('pass', PASSWORD_ARGON2I)))
+            ],
+            'basic token_argon2id' => [
+                new BasicToken([BasicToken::OPTION_HASHED => PASSWORD_ARGON2ID]),
+                new Credentials(new Credential('username', password_hash('password', PASSWORD_ARGON2ID)), new Credential('user', password_hash('pass', PASSWORD_ARGON2ID)))
+            ],
             'bearer token' => [
                 new BearerToken([BearerToken::OPTION_CYPHER => 'Restricted area']),
                 $credentials
@@ -36,7 +48,8 @@ class TokenTest extends TestCase
                     JwtToken::OPTION_AUDIENCE => 'Restricted area'
                 ]),
                 $credentials
-            ],/*
+            ],
+            /*
       'API key' => [
           new KeyToken,
           $credentials

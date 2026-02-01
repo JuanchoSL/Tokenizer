@@ -40,5 +40,4 @@ class Credentials implements CredentialsInterface
         }
         return $this->credentials[$username];
     }
-
 }

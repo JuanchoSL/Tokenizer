@@ -1,15 +1,15 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace JuanchoSL\Tokenizer\Repositories;
 
+use JuanchoSL\DataManipulation\Manipulators\Strings\StringsManipulators;
 use JuanchoSL\Tokenizer\Contracts\CredentialInterface;
 use JuanchoSL\Tokenizer\Contracts\TokenInterface;
+use JuanchoSL\Tokenizer\Contracts\TokenParseableInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
-class DigestToken implements TokenInterface
+class DigestToken implements TokenInterface, TokenParseableInterface
 {
 
     const TYPE = 'Digest';
@@ -26,14 +26,14 @@ class DigestToken implements TokenInterface
      */
     public function __construct(array $options)
     {
-        foreach ([self::OPTION_REALM => 'realm', self::OPTION_URI => 'uri'] as $required_option => $requierd_field) {
+        foreach ([static::OPTION_REALM => 'realm', static::OPTION_URI => 'uri'] as $required_option => $requierd_field) {
             if (array_key_exists($required_option, $options)) {
                 $this->{$requierd_field} = $options[$required_option];
             } else {
                 throw new PreconditionFailedException("The option " . $required_option . " is mandatory");
             }
         }
-        foreach ([self::OPTION_QOP => 'qop'] as $optional_option => $optional_field) {
+        foreach ([static::OPTION_QOP => 'qop'] as $optional_option => $optional_field) {
             if (array_key_exists($optional_option, $options)) {
                 $this->{$optional_field} = $options[$optional_option];
             }
@@ -44,8 +44,8 @@ class DigestToken implements TokenInterface
     {
         $uniqid = uniqid();
         $counter = "00000001";
-        $response = $this->createResponse($credential, $uniqid, $counter, $this->uri);
-        return self::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",cnonce='" . $uniqid . "',nonce='" . md5($this->realm) . "',response='" . $response . "'";
+        $response = $this->createResponse($credential, $uniqid, $counter, md5($this->realm));
+        return static::TYPE . " username='" . $credential->getUsername() . "',realm='" . $this->realm . "',uri='" . $this->uri . "',qop='" . $this->qop . "',nc=" . $counter . ",nonce='" . $uniqid . "',cnonce='" . md5($this->realm) . "',response='" . $response . "'";
     }
 
     public function decode(string $token): CredentialInterface
@@ -62,10 +62,10 @@ class DigestToken implements TokenInterface
      * @param string $token
      * @return array<string,string>|null
      */
-    private function parse(string $token): ?array
+    public function parse(string $token): array
     {
-        if (substr($token, 0, strlen(self::TYPE)) == self::TYPE) {
-            $token = trim(str_replace(self::TYPE, '', $token));
+        if (substr($token, 0, strlen(static::TYPE)) == static::TYPE) {
+            $token = trim(str_replace(static::TYPE, '', $token));
         }
         // protect against missing data
         $needed_parts = array('nonce' => 1, 'nc' => 1, 'cnonce' => 1, 'qop' => 1, 'username' => 1, 'uri' => 1, 'response' => 1);
@@ -78,24 +78,34 @@ class DigestToken implements TokenInterface
             $data[$m[1]] = $m[3] ? $m[3] : $m[4];
             unset($needed_parts[$m[1]]);
         }
-        return $needed_parts ? null : $data;
+        return $needed_parts ? [] : $data;
     }
 
     public function check(CredentialInterface $credential, string $token): bool
     {
         $parts = $this->parse($token);
-        if (empty($parts)) {
+        if (empty($parts) || !isset($parts['nonce'], $parts['nc'], $parts['cnonce'], $parts['username']) || $parts['username'] != $credential->getUsername()) {
             return false;
         }
-        $response = $this->createResponse($credential, $parts['cnonce'], $parts['nc'], $parts['uri']);
+        $response = $this->createResponse($credential, $parts['nonce'], $parts['nc'], $parts['cnonce']);
         return $parts['response'] === $response;
     }
 
-    private function createResponse(CredentialInterface $credential, string $uniqid, string $counter, string $uri): string
+    private function createResponse(CredentialInterface $credential, string $uniqid, string $counter, string $cnonce): string
     {
-        $A1 = md5($credential->getUsername() . ':' . $this->realm . ':' . $credential->getPassword());
-        $A2 = md5('GET:' . $uri);
-        return md5($A1 . ':' . md5($this->realm) . ':' . $counter . ':' . $uniqid . ':auth:' . $A2);
+        $A2 = (new StringsManipulators($_SERVER['REQUEST_METHOD'] ?? 'GET'))->concatenation($_SERVER['REQUEST_URI'] ?? '/', ':')->md5();
+        return (new StringsManipulators($credential->getUsername()))
+            ->concatenation($this->realm, ':')
+            ->concatenation($credential->getPassword(), ':')
+            ->md5()
+            ->concatenation($uniqid, ':')
+            ->concatenation($counter, ':')
+            ->concatenation($cnonce, ':')
+            ->concatenation('auth', ':')
+            ->concatenation((string) $A2, ':')
+            ->md5()
+            ->__tostring()
+        ;
     }
 
 }

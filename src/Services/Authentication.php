@@ -56,22 +56,15 @@ class Authentication
     }
 
     /**
-     * Check if provided credential exists into Credential sequence
+     * Check if provided credential exists into Credential sequence, creating a token and avalidating it
      * @param CredentialInterface $credential The Credential to check
      * @return CredentialInterface
      * @throws UnauthorizedException
      */
     public function authenticateByCredential(CredentialInterface $credential): CredentialInterface
     {
-        if (!$this->users->hasCredential($credential->getUsername())) {
-            throw new UnauthorizedException("The user '{$credential->getUsername()}' not exists");
-        } else {
-            $user = $this->users->getCredential($credential->getUsername());
-            if ($user->getPassword() !== $credential->getPassword()) {
-                throw new UnauthorizedException("The passsword for '{$credential->getUsername()}' is not correct");
-            }
-        }
-        return $credential;
+        $token = $this->tokenizer->encode($credential);
+        return $this->authenticateByToken($token);
     }
 
 }
