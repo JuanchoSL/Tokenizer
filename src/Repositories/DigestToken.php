@@ -9,7 +9,7 @@ use JuanchoSL\Tokenizer\Contracts\TokenParseableInterface;
 use JuanchoSL\Tokenizer\Entities\Credential;
 use JuanchoSL\Exceptions\PreconditionFailedException;
 
-class DigestToken implements TokenInterface,TokenParseableInterface
+class DigestToken implements TokenInterface, TokenParseableInterface
 {
 
     const TYPE = 'Digest';
@@ -84,7 +84,7 @@ class DigestToken implements TokenInterface,TokenParseableInterface
     public function check(CredentialInterface $credential, string $token): bool
     {
         $parts = $this->parse($token);
-        if (empty($parts)) {
+        if (empty($parts) || !isset($parts['nonce'], $parts['nc'], $parts['cnonce'], $parts['username']) || $parts['username'] != $credential->getUsername()) {
             return false;
         }
         $response = $this->createResponse($credential, $parts['nonce'], $parts['nc'], $parts['cnonce']);
