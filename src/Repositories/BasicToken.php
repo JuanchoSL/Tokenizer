@@ -14,7 +14,7 @@ class BasicToken implements TokenInterface, TokenParseableInterface
 
     const TYPE = 'Basic';
 
-    const string OPTION_HASHED = "hashing";
+    const OPTION_HASHED = "hashing";
 
     private ?string $hashing = null;
 
