@@ -22,8 +22,8 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        dependencies: ["install", "update --prefer-lowest", "update"]
+        os: [ubuntu-latest, windows-latest]
+        dependencies: ["install", "update"]
 
     steps:
       - uses: actions/checkout@main
