@@ -1,5 +1,18 @@
 # Change Log - Tokenizer
 
+## [1.0.5] - 2026-08-05
+
+### Added
+
+### Changed
+
+- Phpunit version to v10
+
+### Fixed
+
+- Use static in tests dataproviders
+- Removed constant type, avoiding error for php versions prior to 8.3
+
 ## [1.0.4] - 2026-02-01
 
 ### Added

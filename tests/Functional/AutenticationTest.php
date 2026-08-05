@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 class AutenticationTest extends TestCase
 {
 
-    public function providerLoginData(): array
+    public static function providerLoginData(): array
     {
         $credentials = new Credentials(new Credential('username', 'password'), new Credential('user', 'pass'));
         return [
